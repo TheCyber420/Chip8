@@ -11,21 +11,23 @@ void init_window(uint16_t width, uint16_t height)
     clear_screen();
 }
 
-void update_screen(uint8_t frame_buffer[64 * 32])
+void update_screen(uint8_t frame_buffer[256])
 {
     BeginDrawing();
-
     for (int y = 0; y < SCREEN_HEIGHT; ++y)
     {
-        for (int x = 0; x < SCREEN_WIDTH; ++x)
+        for (int x = 0; x < SCREEN_WIDTH / 8; ++x)
         {
-            if (screen_buffer[y * SCREEN_WIDTH + x])
+            for (int b = 0; b < 8; ++b)
             {
-                DrawRectangle(x * pixel_size, y * pixel_size, pixel_size, pixel_size, GREEN);
+                // checks all 8 pixels in the frame_buffer bytes
+                if ((frame_buffer[y * 8 + x] >> (7 - b) & 1) == 1)
+                {
+                    DrawRectangle((x * 8 + b) * pixel_size, y * pixel_size, pixel_size, pixel_size, GREEN);
+                }
             }
         }
     }
-
     EndDrawing();
 }
 
